@@ -7,6 +7,13 @@ It works by hashing each candidate word from a provided wordlist and comparing i
 HashSnake performs dictionary-based hash recovery (also known as wordlist-based cracking).
 
 # The process is simple:
-  The user is required to provide a hash (using the -t option) // -t 717d3e7b9278e122e65d6240c7ea9b81 (which plain-text value of that hash is 'clarus', as well as a worldist (using the -w option) // -w rockyou.txt,
-  and an algorithm (using the -a option) // -a MD5.
+  ## The user is required to provide:
+   1. A hash (using the -t option) // -t 717d3e7b9278e122e65d6240c7ea9b81 (which plain-text value of that hash is 'clarus')
+   2. As well as a worldist (using the -w option) // -w rockyou.txt
+   3. And an algorithm (using the -a option) // -a MD5.
+
+  Example usage: <img width="811" height="35" alt="image" src="https://github.com/user-attachments/assets/a0426cf0-3178-4d39-b4cb-23d2457ba8fe" />
+
+
+
   
