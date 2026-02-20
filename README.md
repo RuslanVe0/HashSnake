@@ -12,7 +12,7 @@ HashSnake performs dictionary-based hash recovery (also known as wordlist-based 
    2. As well as a worldist (using the -w option) // -w rockyou.txt
    3. And an algorithm (using the -a option) // -a md5.
 
-  Example usage: 
+  Example usage: <br>
     <img width="811" height="35" alt="image" src="https://github.com/user-attachments/assets/a0426cf0-3178-4d39-b4cb-23d2457ba8fe" />
 
   <img width="604" height="288" alt="image" src="https://github.com/user-attachments/assets/de3e8ae6-7902-4e1b-8c06-31e9243e7182" />
