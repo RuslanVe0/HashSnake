@@ -72,11 +72,13 @@ class HashSnake():
             msvcrt.getch()
             open("agree.txt", "a", encoding = "utf-8", errors = "ignore").write("User has agreed!")
         self.HashEvent = HashEvent()
+        self.target_completion: int = 0
         self.HashEvent._hash_string = targets
         self.verbosity: bool = verbosity
         self.HashEvent._algorithm = algorithm
         for target in targets:
             self.functions[algorithm.__name__()].__call__(target)
+        self.size_of_targets: int = len(targets)-1
         self.HashEvent._path = path
         self.HashEvent.load_path()
         self.counter: int = 0
@@ -116,6 +118,7 @@ Total time elapsed: {tools.utils.calc(_TimerEvent.total_time)}
 Speed: {self.HashEvent._speed} H/s
 Estimated time: {tools.utils.calc(self.HashEvent._remaining_words / self.HashEvent._speed) if self.HashEvent._speed else "n/a"}
 Completion rate: {(self.counter / self.HashEvent._dictionary_size)*100:.2f}%/100%
+Target completion: {(self.target_completion / self.size_of_targets) * 100}%/100%
 
 Words left: {self.HashEvent._remaining_words}/{self.HashEvent._dictionary_size}
 
@@ -156,6 +159,7 @@ Target: {self.HashEvent._current_target}
                     self.counter += 1
                     self.HashEvent._remaining_words -= 1
                 self.HashEvent._remaining_words = self.HashEvent._dictionary_size
+                self.target_completion += 1
             _TimerEvent.running = False
             
         except KeyboardInterrupt:
