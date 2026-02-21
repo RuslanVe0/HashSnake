@@ -2,6 +2,7 @@ import time
 import re
 import tools.utils
 from algorithms.algorithms import sha256, md5, BCrypt
+import threading
 
 class HashEvent():
     
@@ -27,7 +28,7 @@ class HashEvent():
 class TimerEvent():
     
     total_time: int = 0
-    running: bool = False
+    running: bool = True
 
 def md5_check(target: str) -> str:
     size: int = 32
@@ -61,7 +62,7 @@ class HashSnake():
     def __init__(self, targets: list, algorithm: object, path: str, verbosity: bool) -> None:
         self.HashEvent = HashEvent()
         self.HashEvent._hash_string = targets
-        self.verbosity = verbosity
+        self.verbosity: bool = verbosity
         self.HashEvent._algorithm = algorithm
         for target in targets:
             self.functions[algorithm.__name__()].__call__(target)
@@ -125,21 +126,21 @@ Target: {self.HashEvent._current_target}
         time.sleep(1)
         current_counter: int = self.counter
         self.HashEvent._speed = current_counter - last_counter
-        
-
-    def start(self, threaded: bool = False):
+    
+    def start(self):
         _TimerEvent.running = True
         self.count_time()
         self.counter: int = 0
         try:
             for targets in self.HashEvent._hash_string:
+                self.counter = 0
                 self.HashEvent._current_target = targets
                 self.HashEvent._status = False
                 for words in open(self.HashEvent._path, encoding = "utf-8", errors = "ignore"):
                     if self.HashEvent._status:
                         break
                     if _TimerEvent.running:
-                        self.compare_normal(words, targets) if not threaded else self._tcompare(words, targets)
+                        self.compare_normal(words, targets)
                     self.counter += 1
                     self.HashEvent._remaining_words -= 1
                 self.HashEvent._remaining_words = self.HashEvent._dictionary_size

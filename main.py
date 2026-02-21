@@ -17,7 +17,7 @@ class CommandLine(object):
     
     def __init__(self):
         self.parser = argparse.ArgumentParser(prog = "HashSnake", usage = "The purpose of this program is to compare hash values in order to find the original plaintext that corresponds to a given hash using a wordlist. This program is intended strictly for educational purposes.\
-The creator of this program is not responsible for any misuse or damage caused by it.")
+The authors of this program are not responsible for any misuse or damage caused by it.")
         
     def __repr__(self):
         return "CommandLine"
