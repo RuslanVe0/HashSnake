@@ -56,7 +56,7 @@ def start():
     wordlist = parse_args.wordlist
     if not os.path.exists(wordlist):
         raise OSError("Invalid directory provided. The path is not found.")
-    HashSnake.HashSnake(target, algorithm.__call__(), wordlist, parse_args.verbosity).start()
+    HashSnake.HashSnake(target, algorithm.__call__(), wordlist, parse_args.verbosity, True).start()
     
     
 if __name__ == "__main__":

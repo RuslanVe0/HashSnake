@@ -1,8 +1,10 @@
 import time
 import re
+import os
 import tools.utils
 from algorithms.algorithms import sha256, md5, BCrypt
 import threading
+import msvcrt
 
 class HashEvent():
     
@@ -50,7 +52,11 @@ def BCrypt_check(target: str) -> bool:
 
 _TimerEvent = TimerEvent()
 
+def get_agreement():
+    return os.path.exists("agree.txt")
 
+    
+    
 class HashSnake():
 
     functions: dict = {
@@ -59,7 +65,12 @@ class HashSnake():
         "BCrypt": BCrypt_check
     }
 
-    def __init__(self, targets: list, algorithm: object, path: str, verbosity: bool) -> None:
+    def __init__(self, targets: list, algorithm: object, path: str, verbosity: bool, is_cli: bool = False) -> None:
+        self.is_cli: bool = is_cli
+        if self.is_cli and not get_agreement():
+            print("\n\n[THIS MESSAGE WILL APPEAR ONCE!]\nThis program is intended to recover the plain-text value of a text. If used inappropriately to gain access to unauthorized system,\nthe authors of this project are not responsible.\n\n\nPress any key to continue.")
+            msvcrt.getch()
+            open("agree.txt", "a", encoding = "utf-8", errors = "ignore").write("User has agreed!")
         self.HashEvent = HashEvent()
         self.HashEvent._hash_string = targets
         self.verbosity: bool = verbosity
@@ -69,6 +80,7 @@ class HashSnake():
         self.HashEvent._path = path
         self.HashEvent.load_path()
         self.counter: int = 0
+            
         
     def __repr__(self):
         
