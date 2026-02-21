@@ -31,6 +31,7 @@ class TimerEvent():
     
     total_time: int = 0
     running: bool = True
+    skip: bool = False
 
 def md5_check(target: str) -> str:
     size: int = 32
@@ -105,6 +106,17 @@ class HashSnake():
     def system_clear():
         print("\033c", end = "")
     
+    @tools.utils.threadedfunc
+    def inspection(self):
+        while _TimerEvent.running:
+            character = msvcrt.getch()
+            if character == b"\x1b" or character == b"\x03" and input("Do you really want to stop? (y/n): ") in ("y", "Y"):
+                _TimerEvent.running = False
+                print("Exitting...")
+            if character == b"\r":
+                _TimerEvent.skip = True
+            
+    
     def print_out(self):
         if self.verbosity:
             print(f"""
@@ -145,6 +157,7 @@ Target: {self.HashEvent._current_target}
     def start(self):
         _TimerEvent.running = True
         self.count_time()
+        self.inspection()
         self.counter: int = 0
         try:
             for targets in self.HashEvent._hash_string:
@@ -152,6 +165,10 @@ Target: {self.HashEvent._current_target}
                 self.HashEvent._current_target = targets
                 self.HashEvent._status = False
                 for words in open(self.HashEvent._path, encoding = "utf-8", errors = "ignore"):
+                    if _TimerEvent.skip:
+                        _TimerEvent.skip = False
+                        print(f"Skipping... {words}...")
+                        continue
                     if self.HashEvent._status:
                         break
                     if _TimerEvent.running:
