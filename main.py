@@ -2,6 +2,7 @@ import os
 import argparse
 from algorithms.algorithms import md5, sha256, sha512, BCrypt
 import HashSnake
+import GUIApp
 
 
 features: dict = {
@@ -22,14 +23,14 @@ The authors of this program are not responsible for any misuse or damage caused 
         return "CommandLine"
     
     def create_main_arguments(self):
-        self.parser.add_argument("-t", "--target", help = "The user is required to provide target(s), e.g - --target=<hash1> or --target=<hash1>,<hash2>.", required = True)
-        parser = self.parser.add_subparsers(dest = "command", required = True)
+        self.parser.add_argument("-t", "--target", help = "The user is required to provide target(s), e.g - --target=<hash1> or --target=<hash1>,<hash2>.")
+        parser = self.parser.add_subparsers(dest = "command")
         self.add_parser(parser, "algorithms", "Choosing hashing algorithm", self.create_algorithms_argument)
-        self.parser.add_argument("-w", "--wordlist", help = "Provide a wordlist.", required = True)
+        self.parser.add_argument("-w", "--wordlist", help = "Provide a wordlist.")
         self.parser.add_argument("-v", "--verbosity", help = "Verbosity debug", required = False, action = "store_true", default = False)
-    
+        self.parser.add_argument("-g", "--gui", help = "Turn on GUI interface", required = False, action = "store_true", default = False)
     def create_algorithms_argument(self, parser: object) -> None:
-        parser.add_argument("-a", "--algorithm", choices = ["md5", "sha256", "sha512", "BCrypto", "all"], required = True, help = "Choose hasing algorithm")
+        parser.add_argument("-a", "--algorithm", choices = ["md5", "sha256", "sha512", "BCrypto", "all"], help = "Choose hasing algorithm")
     
     def add_parser(self, parser: argparse, name: str, description: str, function) -> None:
         function(parser.add_parser(name, help = description))
@@ -44,6 +45,10 @@ def start():
     _object: CommandLine = CommandLine()
     _object.create_main_arguments()
     parse_args = _object.finalize()
+    if not parse_args.gui and not parse_args.target and not parse_args.algorithm and not parse_args.wordlist:
+        raise ValueError("Invalid arguments provided.")
+    elif parse_args.gui:
+        GUIApp.GUIApp().start()
     target: list = []
     if "," in parse_args.target:
         target = parse_args.target.split(",")

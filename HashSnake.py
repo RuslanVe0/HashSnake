@@ -35,13 +35,18 @@ class TimerEvent():
 
 def md5_check(target: str) -> str:
     size: int = 32
-    if len(target) < size or len(target) > size:
+    if len(target) != size:
         raise ValueError("It is required a MD5 hash.")
 
 def sha256_check(target: str) -> str:
     size: int = 64
-    if len(target) < size or len(target) > size:
+    if len(target) != size:
         raise ValueError("It is required a SHA256 hash.")
+    
+def sha512_check(target: str) -> str:
+    size: int = 128
+    if len(target) != size:
+        raise ValueError("It is required a SHA512 hash.")
 
 def BCrypt_check(target: str) -> bool:
     if len(target.split(".")) < 2:
@@ -59,6 +64,7 @@ class HashSnake():
     functions: dict = {
         "md5": md5_check,
         "sha256": sha256_check,
+        "sha512": sha512_check,
         "BCrypt": BCrypt_check
     }
 
