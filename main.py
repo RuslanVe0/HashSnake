@@ -9,7 +9,6 @@ features: dict = {
     "sha256" : sha256,
     "sha512": sha512,
     "BCrypt": BCrypt,
-    "all": [md5, sha256, sha512, BCrypt]
 }
 
 class CommandLine(object):

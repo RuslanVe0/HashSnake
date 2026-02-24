@@ -37,15 +37,11 @@ def md5_check(target: str) -> str:
     size: int = 32
     if len(target) < size or len(target) > size:
         raise ValueError("It is required a MD5 hash.")
-    if not re.fullmatch(r"[a-fA-F0-9]{32}", target):
-        raise ValueError("It is required a MD5 hash.")
-    
+
 def sha256_check(target: str) -> str:
     size: int = 64
     if len(target) < size or len(target) > size:
         raise ValueError("It is required a SHA256 hash.")
-    if not re.fullmatchtch(r"[a-fA-F0-9]{64}", target):
-        raise ValueError("It is required a MD5 hash.")
 
 def BCrypt_check(target: str) -> bool:
     if len(target.split(".")) < 2:
@@ -73,9 +69,9 @@ class HashSnake():
             msvcrt.getch()
             open("agree.txt", "a", encoding = "utf-8", errors = "ignore").write("User has agreed!")
         self.HashEvent = HashEvent()
-        self.target_completion: int = 0
+        self.target_completion: int = 1
         self.HashEvent._hash_string = targets
-        self.verbosity: bool = verbosity
+        self.recovered: list = []
         self.HashEvent._algorithm = algorithm
         for target in targets:
             self.functions[algorithm.__name__()].__call__(target)
@@ -83,6 +79,7 @@ class HashSnake():
         self.HashEvent._path = path
         self.HashEvent.load_path()
         self.counter: int = 0
+        self.verbosity = verbosity
             
         
     def __repr__(self):
@@ -94,13 +91,15 @@ class HashSnake():
         clean_word: str = words
         words = self.HashEvent._algorithm._encode(words)
         if self.HashEvent._algorithm._compare(targets, words):
+            self.recovered.append((clean_word, targets))
             self.HashEvent._recovered += 1
             with open("plain.txt", "a", encoding = "utf-8", errors = "ignore") as file:
                 file.write(f"{targets}:{words} - {clean_word} - {tools.utils.calc(_TimerEvent.total_time)}\n")
             file.close()
             self.HashEvent._status = True
-            self.system_clear()
-            self.print_out()
+            if self.is_cli:
+                self.system_clear()
+                self.print_out()
     
     @staticmethod
     def system_clear():
@@ -156,9 +155,11 @@ Target: {self.HashEvent._current_target}
     
     def start(self):
         _TimerEvent.running = True
-        self.count_time()
-        self.inspection()
+        if self.is_cli:
+            self.count_time()
+            self.inspection()
         self.counter: int = 0
+
         try:
             for targets in self.HashEvent._hash_string:
                 self.counter = 0
@@ -178,6 +179,7 @@ Target: {self.HashEvent._current_target}
                 self.HashEvent._remaining_words = self.HashEvent._dictionary_size
                 self.target_completion += 1
             _TimerEvent.running = False
+            return self.recovered
             
         except KeyboardInterrupt:
             _TimerEvent.running = False
