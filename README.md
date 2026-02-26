@@ -17,11 +17,12 @@ HashSnake performs dictionary-based hash recovery (also known as wordlist-based 
 
   <img width="604" height="288" alt="image" src="https://github.com/user-attachments/assets/de3e8ae6-7902-4e1b-8c06-31e9243e7182" />
   ## GUI (Graphical User Interface)
-  To use GUI the user is required to provide "--gui" argument in the commandline arguments, regarding "main.py" file.<br>
-  ````bash
-  python main.py --gui
-  ````
 
+  To use the GUI, the user must provide the `--gui` argument when running `main.py`.
+
+  ```bash
+  python main.py --gui
+  ```
 # Installation:
   1. The repository can be clonned using - git clone https://github.com/RuslanVe0/HashSnake.git
   2. Important libraries are required to be installed such as BCrypt.
