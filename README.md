@@ -25,6 +25,8 @@ HashSnake performs dictionary-based hash recovery (also known as wordlist-based 
   ```bash
   python main.py --gui
   ```
+
+  In the GUI environment the user is required to provide a Hash (Supported hash algorithms are - MD5, SHA1, SHA224, SHA256, SHA512, BCrypt), a wordlist, and salt which is optional.
 # Installation:
   1. The repository can be clonned using - git clone https://github.com/RuslanVe0/HashSnake.git
   2. Important libraries are required to be installed such as BCrypt.
