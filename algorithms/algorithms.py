@@ -2,6 +2,7 @@ import hashlib
 import bcrypt
 
 
+
 def _encode(text, module) -> str:
     return module(text.encode("utf-8", errors = "ignore")).hexdigest()
 
