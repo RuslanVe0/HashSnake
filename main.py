@@ -1,6 +1,6 @@
 import os
 import argparse
-from algorithms.algorithms import md5, sha256, sha512, BCrypt
+from algorithms.algorithms import md5, sha1, sha224, sha256, sha512, BCrypt
 import HashSnake
 import GUIApp
 
@@ -9,6 +9,8 @@ features: dict = {
     "md5": md5,
     "sha256" : sha256,
     "sha512": sha512,
+    "sha224": sha224,
+    "sha1": sha1,
     "BCrypt": BCrypt,
 }
 
@@ -29,6 +31,7 @@ The authors of this program are not responsible for any misuse or damage caused 
         self.parser.add_argument("-w", "--wordlist", help = "Provide a wordlist.")
         self.parser.add_argument("-v", "--verbosity", help = "Verbosity debug", required = False, action = "store_true", default = False)
         self.parser.add_argument("-g", "--gui", help = "Turn on GUI interface", required = False, action = "store_true", default = False)
+        self.parser.add_argument("-s", "--salt", help = "Supply a salt.", required = False, default = "")
     def create_algorithms_argument(self, parser: object) -> None:
         parser.add_argument("-a", "--algorithm", choices = ["md5", "sha256", "sha512", "BCrypto", "all"], help = "Choose hasing algorithm")
     
@@ -45,10 +48,13 @@ def start():
     _object: CommandLine = CommandLine()
     _object.create_main_arguments()
     parse_args = _object.finalize()
-    if not parse_args.gui and not parse_args.target and not parse_args.algorithm and not parse_args.wordlist:
+    if not hasattr(parse_args, "algorithm") and not parse_args.gui:
+        raise ValueError("Invalid algorithm provided.")
+    if not parse_args.gui and not parse_args.target  and not parse_args.wordlist:
         raise ValueError("Invalid arguments provided.")
     elif parse_args.gui:
         GUIApp.GUIApp().start()
+        return
     target: list = []
     if "," in parse_args.target:
         target = parse_args.target.split(",")
@@ -60,7 +66,7 @@ def start():
     wordlist = parse_args.wordlist
     if not os.path.exists(wordlist):
         raise OSError("Invalid directory provided. The path is not found.")
-    HashSnake.HashSnake(target, algorithm.__call__(), wordlist, parse_args.verbosity, True).start()
+    HashSnake.HashSnake(target, algorithm.__call__(), wordlist, parse_args.verbosity, True).start(parse_args.salt)
     
     
 if __name__ == "__main__":

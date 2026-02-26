@@ -9,12 +9,12 @@ import msvcrt
 class HashEvent():
     
     
-    _hash_string: str = ""
+    _hash_string: list = []
     _algorithm: str = None
     _dictionary: object = None
     _dictionary_size: int = 0
     _recovered: int = 0
-    _status: bool = False
+    status_: bool = False
     _current_word: str = ""
     _current_hashed_word: str = ""
     _current_target: str = ""
@@ -33,20 +33,30 @@ class TimerEvent():
     running: bool = True
     skip: bool = False
 
-def md5_check(target: str) -> str:
+def md5_check(target: str):
     size: int = 32
     if len(target) != size:
         raise ValueError("It is required a MD5 hash.")
 
-def sha256_check(target: str) -> str:
+def sha256_check(target: str):
     size: int = 64
     if len(target) != size:
         raise ValueError("It is required a SHA256 hash.")
     
-def sha512_check(target: str) -> str:
+def sha512_check(target: str):
     size: int = 128
     if len(target) != size:
         raise ValueError("It is required a SHA512 hash.")
+
+def sha1_check(target: str):
+    size: int = 40
+    if len(target) != size:
+        raise ValueError("It is required a SHA1 hash.")
+
+def sha224_check(target: str):
+    size: int = 56
+    if len(target) != size:
+        raise ValueError("It is required a SHA224 hash.")
 
 def BCrypt_check(target: str) -> bool:
     if len(target.split(".")) < 2:
@@ -65,6 +75,8 @@ class HashSnake():
         "md5": md5_check,
         "sha256": sha256_check,
         "sha512": sha512_check,
+        "sha1": sha1_check,
+        "sha224": sha224_check,
         "BCrypt": BCrypt_check
     }
 
@@ -75,8 +87,8 @@ class HashSnake():
             msvcrt.getch()
             open("agree.txt", "a", encoding = "utf-8", errors = "ignore").write("User has agreed!")
         self.HashEvent = HashEvent()
-        self.target_completion: int = 1
-        self.HashEvent._hash_string = targets
+        self.target_completion: int = 0
+        self.HashEvent._hash_string: list = targets
         self.recovered: list = []
         self.HashEvent._algorithm = algorithm
         for target in targets:
@@ -84,25 +96,26 @@ class HashSnake():
         self.size_of_targets: int = len(targets)-1
         self.HashEvent._path = path
         self.HashEvent.load_path()
-        self.counter: int = 0
+        self.counter: int = 1
         self.verbosity = verbosity
+        self.HashEvent._recovered = 0
             
         
     def __repr__(self):
         
         return f"<HashSnake hash_template={self.HashEvent}>"
 
-    def compare_normal(self, words: str, targets: str):
+    def compare_normal(self, words: str, targets: str, salt: str):
         words = words.strip()
         clean_word: str = words
-        words = self.HashEvent._algorithm._encode(words)
+        words = self.HashEvent._algorithm._encode(words + salt if salt else words)
         if self.HashEvent._algorithm._compare(targets, words):
             self.recovered.append((clean_word, targets))
             self.HashEvent._recovered += 1
             with open("plain.txt", "a", encoding = "utf-8", errors = "ignore") as file:
                 file.write(f"{targets}:{words} - {clean_word} - {tools.utils.calc(_TimerEvent.total_time)}\n")
             file.close()
-            self.HashEvent._status = True
+            self.HashEvent.status_ = True
             if self.is_cli:
                 self.system_clear()
                 self.print_out()
@@ -135,7 +148,7 @@ Total time elapsed: {tools.utils.calc(_TimerEvent.total_time)}
 Speed: {self.HashEvent._speed} H/s
 Estimated time: {tools.utils.calc(self.HashEvent._remaining_words / self.HashEvent._speed) if self.HashEvent._speed else "n/a"}
 Completion rate: {(self.counter / self.HashEvent._dictionary_size)*100:.2f}%/100%
-Target completion: {(self.target_completion / self.size_of_targets) * 100}%/100%
+Target completion: {((self.target_completion / self.size_of_targets) if self.size_of_targets > 0 else 0) * 100}%/100%
 
 Words left: {self.HashEvent._remaining_words}/{self.HashEvent._dictionary_size}
 
@@ -158,28 +171,33 @@ Target: {self.HashEvent._current_target}
         time.sleep(1)
         current_counter: int = self.counter
         self.HashEvent._speed = current_counter - last_counter
-    
-    def start(self):
+
+
+    def start(self, salt: str = ""):
         _TimerEvent.running = True
         if self.is_cli:
             self.count_time()
             self.inspection()
         self.counter: int = 0
-
+        salt = salt.strip()
         try:
+
             for targets in self.HashEvent._hash_string:
                 self.counter = 0
                 self.HashEvent._current_target = targets
-                self.HashEvent._status = False
+                self.HashEvent.status_ = False
                 for words in open(self.HashEvent._path, encoding = "utf-8", errors = "ignore"):
                     if _TimerEvent.skip:
                         _TimerEvent.skip = False
                         print(f"Skipping... {words}...")
                         continue
-                    if self.HashEvent._status:
-                        break
+
                     if _TimerEvent.running:
-                        self.compare_normal(words, targets)
+                        self.compare_normal(words, targets, salt)
+
+                    if self.HashEvent.status_:
+                        break
+
                     self.counter += 1
                     self.HashEvent._remaining_words -= 1
                 self.HashEvent._remaining_words = self.HashEvent._dictionary_size
